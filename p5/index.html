@@ -1,46 +1,61 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <meta charset="utf-8" />
+</head>
 
-  </head>
-  <body>
+<body>
     <main>
     </main>
-    <script src="sketch.js"></script>
-    <!-- General -->
-    <script src="classes/game_object.js"></script>
-    <script src="classes/transform.js"></script>
-    <!-- Agents -->
-    <script src="classes/agents/agent.js"></script>
-    <script src="classes/agents/enemy.js"></script>
-    <script src="classes/agents/player.js"></script>
-    <!-- Colliders -->
-    <script src="classes/colliders/collider.js"></script>
-    <script src="classes/colliders/ellipse_collider.js"></script>
-    <script src="classes/colliders/rectangle_collider.js"></script>
-    <!-- Controllers -->
-    <script src="classes/controllers/controller.js"></script>
-    <script src="classes/controllers/enemy_controller.js"></script>
-    <script src="classes/controllers/player_controller.js"></script>
-    <!-- Physics -->
-    <script src="classes/physics/physics.js"></script>
-      <!-- Forces -->
-      <script src="classes/physics/forces/force.js"></script>    
-      <script src="classes/physics/forces/applied_force.js"></script>
-      <script src="classes/physics/forces/drag_force.js"></script>
-      <script src="classes/physics/forces/frictional_force.js"></script>
-      <script src="classes/physics/forces/gravitational_force.js"></script>
-    <script src="classes/physics/forces/player_movement_force.js"></script>
-      <script src="classes/physics/forces/normal_force.js"></script>
-      <script src="classes/physics/forces/spring_force.js"></script>
-    <!-- Rendering -->
-    <script src="classes/rendering/renderer.js"></script> 
-    <script src="classes/rendering/circle_renderer.js"></script>   
-    <!-- Utilities -->
-    <script src="classes/utilities/directions.js"></script>
-  </body>
+    <div title="general">
+        <script src="sketch.js"></script>
+    </div>
+    <div title="components">
+        <script src="classes/components/transform.js"></script>
+        <div, title="colliders">
+            <script src="classes/components/colliders/collider.js"></script>
+            <script src="classes/components/colliders/circle_collider.js"></script>
+            <script src="classes/components/colliders/rectangle_collider.js"></script>
+    </div>
+    <div title="controllers">
+        <script src="classes/components/controllers/controller.js"></script>
+        <script src="classes/components/controllers/enemy_controller.js"></script>
+        <script src="classes/components/controllers/player_controller.js"></script>
+    </div>
+    <div title="physics">
+        <script src="classes/components/physics/physics.js"></script>
+        <div, title="forces">
+            <script src="classes/components/physics/forces/force.js"></script>
+            <script src="classes/components/physics/forces/applied_force.js"></script>
+            <script src="classes/components/physics/forces/drag_force.js"></script>
+            <script src="classes/components/physics/forces/frictional_force.js"></script>
+            <script src="classes/components/physics/forces/gravitational_force.js"></script>
+            <script src="classes/components/physics/forces/player_movement_force.js"></script>
+            <script src="classes/components/physics/forces/normal_force.js"></script>
+            <script src="classes/components/physics/forces/spring_force.js"></script>
+    </div>
+    </div>
+    <div title="renderers">
+        <script src="classes/components/renderers/renderer.js"></script>
+        <script src="classes/components/renderers/circle_renderer.js"></script>
+    </div>
+    </div>
+    <div title="game_objects">
+        <script src="classes/game_objects/game_object.js"></script>
+        <div title="Agents">
+            <script src="classes/game_objects/agents/agent.js"></script>
+            <script src="classes/game_objects/agents/enemy.js"></script>
+            <script src="classes/game_objects/agents/npc.js"></script>
+            <script src="classes/game_objects/agents/player.js"></script>
+        </div>
+    </div>
+    <div title="utilities">
+        <script src="classes/utilities/directions.js"></script>
+    </div>
+</body>
+
 </html>
