@@ -1,7 +1,10 @@
+/**
+ * Defines a rectangle collider of a Game Object for the purposes of detection or physical collision.
+ */
 class RectangleCollider extends Collider {
-  constructor(center, bounds_height, bounds_width) {
+  constructor(center, boundsHeight, boundsWidth) {
     super(center);
-    this.bounds_height = bounds_height;
-    this.bounds_width = bounds_width;
+    this.boundsHeight = boundsHeight;
+    this.boundsWidth = boundsWidth;
   }
 }

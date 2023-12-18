@@ -1,23 +1,9 @@
 /**
- * Defines the parent class for all of the forces.
+ * Defines the parent class for all forces.
+ * @abstract
  */
-
-/** @abstract */
 class Force {
-  constructor(force, isActive = true) {
-    this.isActive = isActive;
+  constructor(force = createVector(0, 0)) {
     this.force = force;
-  }
-
-  apply(physics) {
-    physics.acceration += this.force;
-  }
-  
-  activate() {
-    this.isActive = true;
-  }
-  
-  deactivate() {
-    this.isActive = false;
   }
 }

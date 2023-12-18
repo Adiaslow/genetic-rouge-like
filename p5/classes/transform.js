@@ -1,12 +1,10 @@
 /**
  * Defines the position, rotation, and size of a Game Object.
- * Note: rotation should be done with quaternions when we move to an engine. For now, they are not enabled.
+ * Note: Rotation should be handled with quaternions when transitioning to an engine; however, it is currently not enabled.
  */
-
 class Transform {
-  constructor(position, size, rotation = null) {
+  constructor(position, size) {
     this.position = position;
-    this.rotation = rotation;
     this.size = size;
   }
 }
