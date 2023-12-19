@@ -15,6 +15,6 @@ class CircleCollider extends Collider {
   }
 
   update(transform) {
-    super.update(transform);
+    this.center = transform.position;
   }
 }

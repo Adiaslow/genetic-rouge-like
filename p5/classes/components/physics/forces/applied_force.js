@@ -9,6 +9,7 @@ class AppliedForce extends Force {
    * @param {p5.Vector} force - The force to apply to the object.
    */
   constructor(force) {
+    super();
     this.force = force;
   }
 }

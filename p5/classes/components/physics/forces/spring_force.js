@@ -4,5 +4,7 @@
  * @extends{Force}
  */
 class SpringForce extends Force {
-  constructor() {}
+  constructor() {
+    super();
+  }
 }

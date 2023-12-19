@@ -15,34 +15,27 @@ class PlayerController extends Controller {
    * @method handleInput
    * @methoddesc Handles input for the Player class.
    */
-  handleInput(physics) {
+  handleInput() {
+    let playerMovementInput = createVector(0, 0, 0);
+    // W key
     if (keyIsDown(87)) {
-      // W key
-      physics.forces.playerMovementForce[1] += new PlayerMovementForce(
-        createVector(0, -1),
-      );
-      console.log("Up");
+      playerMovementInput.add(createVector(0, 1, 0));
     }
+    // S key
     if (keyIsDown(83)) {
-      // S key
-      physics.forces.playerMovementForce[1] += new PlayerMovementForce(
-        createVector(0, 1),
-      );
-      console.log("Down");
+      playerMovementInput.add(createVector(0, -1, 0));
     }
+
+    // A key
     if (keyIsDown(65)) {
-      // A key
-      physics.forces.playerMovementForce[1] += new PlayerMovementForce(
-        createVector(1, 0),
-      );
-      console.log("Left");
+      playerMovementInput.add(createVector(1, 0, 0));
     }
+
+    // D key
     if (keyIsDown(68)) {
-      // D key
-      physics.forces.playerMovementForce[1] += new PlayerMovementForce(
-        createVector(-1, 0),
-      );
-      console.log("Right");
+      playerMovementInput.add(createVector(-1, 0, 0));
     }
+
+    return playerMovementInput;
   }
 }

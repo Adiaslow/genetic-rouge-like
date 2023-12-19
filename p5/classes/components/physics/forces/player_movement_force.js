@@ -6,6 +6,6 @@
 class PlayerMovementForce extends Force {
   constructor(force) {
     super();
-    this.force = force;
+    this.force = force.normalize();
   }
 }

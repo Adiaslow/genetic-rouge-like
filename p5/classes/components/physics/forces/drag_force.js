@@ -4,5 +4,7 @@
  * @extends{Force}
  */
 class DragForce extends Force {
-  constructor() {}
+  constructor() {
+    super();
+  }
 }

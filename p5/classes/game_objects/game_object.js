@@ -16,7 +16,7 @@ class GameObject {
     this.physics = physics || null;
     this.renderer = renderer || null;
     this.transform =
-      transform || new Transform(createVector(0, 0), createVector(1, 1));
+      transform || new Transform(createVector(0, 0, 0), createVector(1, 1, 1));
 
     if (this.constructor === GameObject) {
       throw new Error("Cannot instantiate abstract class GameObject.");
@@ -42,16 +42,16 @@ class GameObject {
   /**
    * @method addPhysics
    * @methoddesc Adds physics to the Game Object.
+   * @param {Physics} physics - The physics to add to the Game Object.
    */
-
   addPhysics(physics) {
     this.physics = physics;
   }
+
   /**
    * @method removePhysics
    * @methoddesc Removes physics from the Game Object.
    */
-
   removePhysics() {
     this.physics = null;
   }
@@ -77,15 +77,15 @@ class GameObject {
    * @methoddesc Updates the collider, physics, and renderer of the Game Object.
    */
   update() {
-    if (this.collider) {
+    if (this.collider !== null) {
       this.collider.update(this.transform);
     }
 
-    if (this.physics) {
+    if (this.physics !== null) {
       this.physics.apply(this.transform);
     }
 
-    if (this.renderer) {
+    if (this.renderer !== null) {
       this.renderer.render(this.transform);
     }
   }

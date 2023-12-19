@@ -3,9 +3,9 @@
  * @extends {Renderer}
  */
 class CircleRenderer extends Renderer {
-  constructor(isActive = true, diameter = 50) {
+  constructor(diameter, isActive) {
     super(isActive);
-    this.diameter = diameter;
+    this.diameter = diameter || 50;
   }
 
   /**

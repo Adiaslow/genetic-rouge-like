@@ -1,39 +1,44 @@
 /**
  * @class Player
  * @classdesc The Player class. The player is an Agent that has a PlayerController.
- * @extends{Agent}
+ * @extends {Agent}
  */
 class Player extends Agent {
   /**
    * @constructor
-   * @param{Collider} collider The collider of the player.
-   * @param{Physics} physics The physics of the player.
-   * @param{Renderer} renderer The renderer of the player.
+   * @param {Collider} collider The collider of the player.
+   * @param {Physics} physics The physics of the player.
+   * @param {Renderer} renderer The renderer of the player.
+   * @param {Transform} transform The transform of the player.
+   * @param {PlayerController} controller The player controller.
    */
-  constructor(collider, physics, renderer, transform) {
+  constructor(collider, physics, renderer, transform, controller) {
     super(collider, physics, renderer, transform, controller);
-    this.controller = new PlayerController();
-
     console.log("Player Spawned!");
   }
 
   /**
    * @method update
-   * @methoddesc Updates the player.
+   * @methoddesc Updates the player and its components.
    */
   update() {
-    if (this.collider) {
-      this.collider.update(this.transform); // Update the collider.
+    if (this.collider !== null) {
+      this.collider.update(this.transform);
     }
 
-    this.controller.handleInput(); // Handle the player's input.
+    let playerMovementInput = createVector(0, 0, 0);
 
-    if (this.physics) {
-      this.physics.apply(this.transform); // Apply the physics.
+    if (this.controller !== null) {
+      playerMovementInput.add(this.controller.handleInput());
+      // console.log("Player Movement Input: " + playerMovementInput);
     }
 
-    if (this.renderer) {
-      this.renderer.render(this.transform); // Render the player.
+    if (this.physics !== null) {
+      this.physics.apply(this.transform, playerMovementInput);
+    }
+
+    if (this.renderer !== null) {
+      this.renderer.render(this.transform);
     }
   }
 }
