@@ -36,6 +36,6 @@ class PlayerController extends Controller {
       playerMovementInput.add(createVector(-1, 0, 0));
     }
 
-    return playerMovementInput;
+    return playerMovementInput.normalize();
   }
 }

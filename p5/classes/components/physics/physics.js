@@ -32,6 +32,40 @@ class Physics {
     };
   }
 
+  calculateNetForce() {
+    // Sum up all the forces
+    for (let force in this.forces) {
+      netForce.add(this.forces[force][1]);
+    }
+  }
+
+  logPhysics(transform) {
+    // Log forces, position, velocity, acceleration, and net force
+    console.log(
+      "Applied Force: " +
+        this.forces.appliedForce[1] +
+        ",\nDrag Force: " +
+        this.forces.dragForce[1] +
+        ",\nFrictional Force: " +
+        this.forces.frictionalForce[1] +
+        ",\nGravitational Force: " +
+        this.forces.gravitationalForce[1] +
+        ",\nNormal Force: " +
+        this.forces.normalForce[1] +
+        ",\nPlayer Movement Force: " +
+        this.forces.playerMovementForce[1] +
+        ",\nSpring Force: " +
+        this.forces.springForce[1],
+      "\n\nPosition: " +
+        transform.position +
+        ",\nVelocity: " +
+        this.velocity +
+        ",\nAcceleration: " +
+        this.acceleration +
+        ",\nNet Force: " +
+        this.netForce,
+    );
+  }
   /**
    * @method apply
    * @methoddesc Applies the physics to the Game Object.
@@ -39,93 +73,74 @@ class Physics {
    */
   apply(transform, playerMovementInput) {
     if (this.isActive) {
-      // reset forces
+      // Reset net force
       this.netForce.set(0, 0, 0);
 
+      // Reset forces
       for (let force in this.forces) {
         this.forces[force][1].set(0, 0, 0);
       }
 
-      // Reset acceleration to zero
+      // Reset acceleration
       this.acceleration.set(0, 0, 0);
 
       // Apply forces
       if (this.forces.appliedForce[0]) {
+        // Apply appliedForce logic here
       }
 
       if (this.forces.playerMovementForce[0]) {
         this.forces.playerMovementForce[1].add(
           new PlayerMovementForce(playerMovementInput).force,
         );
-        // this.netForce.add(this.forces.playerMovementForce[1]);
       }
 
       if (this.forces.dragForce[0]) {
+        // Apply dragForce logic here
       }
 
       if (this.forces.gravitationalForce[0]) {
         this.forces.gravitationalForce[1].add(
           new GravitationalForce(this.netForce).force,
         );
-        // this.netForce.add(this.forces.gravitationalForce[1]);
       }
 
       if (this.forces.normalForce[0]) {
         this.forces.normalForce[1].add(
           new NormalForce(this.forces.gravitationalForce[1], transform).force,
         );
-        // this.netForce.add(this.forces.normalForce[1]);
       }
 
       if (this.forces.frictionalForce[0]) {
         this.forces.frictionalForce[1].add(
-          new FrictionalForce(
-            this.netForce,
-            this.forces.normalForce[1],
-            this.velocity,
-            0.5,
-          ).force,
+          new FrictionalForce(this.velocity, this.forces.normalForce[1], 0.5)
+            .force,
         );
-        // this.netForce.add(this.forces.frictionalForce[1]);
       }
 
-      // Calculate net force and
-      for (let force in this.forces) {
-        this.netForce.add(this.forces[force][1]);
-      }
+      // Calculate net force
+      this.calculateNetForce();
 
-      this.netForce.div(this.mass);
+      // Calculate acceleration
+      this.acceleration = p5.Vector.div(this.netForce, this.mass);
 
-      // Calculate acceleration and update velocity and position
-      this.acceleration.add(p5.Vector.div(this.netForce, this.mass));
-      this.velocity.add(this.acceleration);
-      transform.position.add(this.velocity);
+      // Calculate velocity
+      this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime));
 
-      // Log forces , position, velocity, acceleration, and net force
-      console.log(
-        "Applied Force: " +
-          this.forces.appliedForce[1] +
-          ",\nDrag Force: " +
-          this.forces.dragForce[1] +
-          ",\nFrictional Force: " +
-          this.forces.frictionalForce[1] +
-          ",\nGravitational Force: " +
-          this.forces.gravitationalForce[1] +
-          ",\nNormal Force: " +
-          this.forces.normalForce[1] +
-          ",\nPlayer Movement Force: " +
-          this.forces.playerMovementForce[1] +
-          ",\nSpring Force: " +
-          this.forces.springForce[1],
-        "\n\nPosition: " +
-          transform.position +
-          ",\nVelocity: " +
-          this.velocity +
-          ",\nAcceleration: " +
-          this.acceleration +
-          ",\nNet Force: " +
-          this.netForce,
+      // Verlet integration
+      let nextPosition = p5.Vector.add(
+        p5.Vector.add(
+          transform.position,
+          p5.Vector.mult(this.velocity, deltaTime),
+        ),
+        p5.Vector.mult(this.acceleration, 0.5 * deltaTime * deltaTime),
       );
+
+      // Update position
+      transform.position = nextPosition;
+
+      // Log forces, position, velocity, and acceleration
+      this.logPhysics(transform);
     }
   }
 

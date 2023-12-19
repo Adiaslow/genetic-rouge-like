@@ -24,11 +24,23 @@ function setup() {
   );
 }
 
+let frameCounter = 0;
+let fps = 0;
+
 /**
  * @method draw
  * @methoddesc The p5.js draw function. Called once per frame.
  */
 function draw() {
   background(128);
+
+  if (frameCounter % 10 === 0) {
+    fps = frameRate();
+  }
+  frameCounter++;
+  fill(255);
+  textSize(24);
+  text("FPS: " + Math.floor(fps), 20, 30);
+
   player.update();
 }
