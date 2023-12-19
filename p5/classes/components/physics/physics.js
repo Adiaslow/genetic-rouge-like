@@ -7,9 +7,9 @@ class Physics {
   /**
    * @constructor
    * @param {number} mass - The mass of the entity.
-   * @param {Vector2} velocity - The velocity of the entity.
-   * @param {Vector2} acceleration - The acceleration of the entity.
-   * @param {Vector2} netForce - The net force of the entity.
+   * @param {Vector3} velocity - The velocity of the entity.
+   * @param {Vector3} acceleration - The acceleration of the entity.
+   * @param {Vector3} netForce - The net force of the entity.
    * @param {boolean} isActive - Whether or not the entity is active.
    */
   constructor(mass, velocity, acceleration, netForce, isActive) {
@@ -17,6 +17,7 @@ class Physics {
     this.isActive = isActive || true;
     this.mass = mass || 1;
     this.velocity = velocity || createVector(0, 0, 0);
+    this.velocityDamping = 0.9;
     this.acceleration = acceleration || createVector(0, 0, 0);
     this.netForce = netForce || createVector(0, 0, 0);
 
@@ -33,115 +34,114 @@ class Physics {
   }
 
   calculateNetForce() {
-    // Sum up all the forces
+    this.netForce.set(0, 0, 0);
     for (let force in this.forces) {
-      netForce.add(this.forces[force][1]);
+      if (this.forces[force][0]) {
+        this.netForce.add(this.forces[force][1]);
+      }
     }
   }
 
   logPhysics(transform) {
-    // Log forces, position, velocity, acceleration, and net force
     console.log(
-      "Applied Force: " +
-        this.forces.appliedForce[1] +
-        ",\nDrag Force: " +
-        this.forces.dragForce[1] +
-        ",\nFrictional Force: " +
-        this.forces.frictionalForce[1] +
-        ",\nGravitational Force: " +
-        this.forces.gravitationalForce[1] +
-        ",\nNormal Force: " +
-        this.forces.normalForce[1] +
-        ",\nPlayer Movement Force: " +
-        this.forces.playerMovementForce[1] +
-        ",\nSpring Force: " +
-        this.forces.springForce[1],
-      "\n\nPosition: " +
-        transform.position +
-        ",\nVelocity: " +
-        this.velocity +
-        ",\nAcceleration: " +
-        this.acceleration +
-        ",\nNet Force: " +
-        this.netForce,
+      "Forces:",
+      Object.keys(this.forces)
+        .map((f) => `${f}: ${this.forces[f][1].toString()}`)
+        .join(",\n"),
+      "\n\nPosition:",
+      transform.position.toString(),
+      "\nVelocity:",
+      this.velocity.toString(),
+      "\nAcceleration:",
+      this.acceleration.toString(),
+      "\nNet Force:",
+      this.netForce.toString(),
     );
   }
+
   /**
    * @method apply
    * @methoddesc Applies the physics to the Game Object.
    * @param {Transform} transform - The transform of the entity.
    */
-  apply(transform, playerMovementInput) {
-    if (this.isActive) {
-      // Reset net force
-      this.netForce.set(0, 0, 0);
+  apply(transform, playerMovementInput, deltaTime) {
+    if (!this.isActive) return;
+    // Adjust time step (experiment with values)
+    const adjustedDeltaTime = deltaTime * 1;
+    // Calculate net force at the beginning of the time step
+    this.calculateNetForce();
 
-      // Reset forces
-      for (let force in this.forces) {
-        this.forces[force][1].set(0, 0, 0);
-      }
+    // Calculate new acceleration based on the net force
+    let newAcceleration = p5.Vector.div(this.netForce, this.mass);
 
-      // Reset acceleration
-      this.acceleration.set(0, 0, 0);
+    // Calculate the average acceleration (midpoint between current and new acceleration)
+    let averageAcceleration = p5.Vector.add(
+      this.acceleration,
+      newAcceleration,
+    ).mult(0.5);
 
-      // Apply forces
-      if (this.forces.appliedForce[0]) {
-        // Apply appliedForce logic here
-      }
-
-      if (this.forces.playerMovementForce[0]) {
-        this.forces.playerMovementForce[1].add(
-          new PlayerMovementForce(playerMovementInput).force,
-        );
-      }
-
-      if (this.forces.dragForce[0]) {
-        // Apply dragForce logic here
-      }
-
-      if (this.forces.gravitationalForce[0]) {
-        this.forces.gravitationalForce[1].add(
-          new GravitationalForce(this.netForce).force,
-        );
-      }
-
-      if (this.forces.normalForce[0]) {
-        this.forces.normalForce[1].add(
-          new NormalForce(this.forces.gravitationalForce[1], transform).force,
-        );
-      }
-
-      if (this.forces.frictionalForce[0]) {
-        this.forces.frictionalForce[1].add(
-          new FrictionalForce(this.velocity, this.forces.normalForce[1], 0.5)
-            .force,
-        );
-      }
-
-      // Calculate net force
-      this.calculateNetForce();
-
-      // Calculate acceleration
-      this.acceleration = p5.Vector.div(this.netForce, this.mass);
-
-      // Calculate velocity
-      this.velocity.add(p5.Vector.mult(this.acceleration, deltaTime));
-
-      // Verlet integration
-      let nextPosition = p5.Vector.add(
-        p5.Vector.add(
-          transform.position,
-          p5.Vector.mult(this.velocity, deltaTime),
-        ),
-        p5.Vector.mult(this.acceleration, 0.5 * deltaTime * deltaTime),
-      );
-
-      // Update position
-      transform.position = nextPosition;
-
-      // Log forces, position, velocity, and acceleration
-      this.logPhysics(transform);
+    if (this.acceleration.mag() < 1) {
+      this.acceleration.mult(0);
     }
+
+    // Update velocity based on the average acceleration
+    this.velocity
+      .add(averageAcceleration.mult(adjustedDeltaTime))
+      .mult(this.velocityDamping);
+
+    if (this.velocity.mag() < 1) {
+      this.velocity.mult(0);
+    }
+
+    // Update position based on the new velocity
+    transform.position.add(p5.Vector.mult(this.velocity, adjustedDeltaTime));
+
+    // Assign the new acceleration to this.acceleration for the next frame
+    this.acceleration = newAcceleration;
+
+    // Reset all forces to zero for the next frame. New forces will be calculated in the next frame
+    for (let force in this.forces) {
+      this.forces[force][1].mult(0);
+    }
+
+    // Apply forces
+    if (this.forces.appliedForce[0]) {
+      // Apply appliedForce logic here
+    }
+
+    if (this.forces.playerMovementForce[0]) {
+      this.forces.playerMovementForce[1].add(
+        new PlayerMovementForce(playerMovementInput).force.mult(1),
+      );
+    }
+
+    if (this.forces.dragForce[0]) {
+      // Apply dragForce logic here
+    }
+
+    if (this.forces.gravitationalForce[0]) {
+      this.forces.gravitationalForce[1].add(new GravitationalForce().force);
+    }
+
+    if (this.forces.normalForce[0]) {
+      this.forces.normalForce[1].add(
+        new NormalForce(this.forces.gravitationalForce[1], transform).force,
+      );
+    }
+
+    if (this.forces.frictionalForce[0] && transform.position.z <= 0) {
+      this.forces.frictionalForce[1].add(
+        new FrictionalForce(
+          this.velocity,
+          this.forces.normalForce[1],
+          0.7,
+          0.25,
+        ).force,
+      );
+    }
+
+    // Log forces, position, velocity, and acceleration
+    this.logPhysics(transform);
   }
 
   /**

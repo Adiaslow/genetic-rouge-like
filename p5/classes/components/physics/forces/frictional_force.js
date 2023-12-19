@@ -4,21 +4,26 @@
  * @extends {Force}
  */
 class FrictionalForce extends Force {
-  /**
-   * @constructor
-   * @param {p5.Vector} velocity - The velocity of the object.
-   * @param {p5.Vector} normalForce - The normal force to apply to the object.
-   * @param {number} coefficientOfFriction - The coefficient of friction to apply to the object.
-   */
-  constructor(velocity, normalForce, coefficientOfFriction) {
+  constructor(
+    velocity,
+    normalForce,
+    coefficientOfStaticFriction,
+    coefficientOfKinetcFriction,
+  ) {
     super();
-    // Check if the velocity magnitude is greater than 0 to avoid jittering
-    if (velocity.mag() > 0) {
-      // Calculate the frictional force based on the normal force and a friction factor
-      const frictionFactor = coefficientOfFriction * normalForce.mag();
-      this.force = velocity.copy().mult(-1).normalize().mult(frictionFactor);
+
+    const isMoving = velocity.mag() > 0.1;
+
+    // Choose the appropriate coefficient of friction
+    const coefficientOfFriction = isMoving
+      ? coefficientOfKinetcFriction
+      : coefficientOfStaticFriction;
+
+    // If the object is moving or is capable of moving (kinetic friction scenario)
+    if (isMoving) {
+      const frictionMagnitude = coefficientOfFriction * normalForce.mag();
+      this.force = p5.Vector.mult(velocity.normalize(), -frictionMagnitude);
     } else {
-      // If the velocity is zero, set the frictional force to zero
       this.force = createVector(0, 0, 0);
     }
   }

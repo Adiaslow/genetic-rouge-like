@@ -7,7 +7,7 @@ class GravitationalForce extends Force {
   /**
    * @constructor
    */
-  constructor(netForce) {
+  constructor() {
     super();
     this.force = createVector(0, 0, -9.8);
   }

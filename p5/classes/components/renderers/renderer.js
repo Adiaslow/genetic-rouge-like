@@ -8,8 +8,8 @@ class Renderer {
    * @constructor
    * @param {boolean} isActive - Whether or not the renderer is active.
    */
-  constructor(isActive = true) {
-    this.isActive = isActive;
+  constructor(isActive) {
+    this.isActive = isActive || true;
   }
 
   /**
