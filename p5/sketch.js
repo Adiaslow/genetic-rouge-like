@@ -2,6 +2,8 @@ let playerImage;
 let backgroundImage;
 let frameCounter = 0;
 let fps = 0;
+let canvasWidth = 1024;
+let canvasHeight = 768;
 
 /**
  * @method preload
@@ -19,7 +21,7 @@ function preload() {
 function setup() {
   background(bg);
   // 1024 pixels / 32 pixels per tile = 32 tiles wide, 768 pixels / 32 pixels per tile = 24 tiles tall.
-  createCanvas(1024, 768);
+  createCanvas(canvasWidth, canvasHeight);
 
   playerStartingPosition = createVector(width / 2, height / 2, 0); // The player's starting position.
 
