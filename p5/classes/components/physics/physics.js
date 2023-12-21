@@ -17,7 +17,6 @@ class Physics {
     this.isActive = isActive || true;
     this.mass = mass || 1;
     this.velocity = velocity || createVector(0, 0, 0);
-    this.velocityDamping = 0.9;
     this.acceleration = acceleration || createVector(0, 0, 0);
     this.netForce = netForce || createVector(0, 0, 0);
 
@@ -62,61 +61,37 @@ class Physics {
   /**
    * @method apply
    * @methoddesc Applies the physics to the Game Object.
-   * @param {Transform} transform - The transform of the entity.
+   * @param {Transform} transform - The transform of the Game Object.
+   * @param {Vector3} playerMovementInput - The player movement input.
    */
-  apply(transform, playerMovementInput, deltaTime) {
+  apply(transform, collider, playerMovementInput) {
     if (!this.isActive) return;
     // Adjust time step (experiment with values)
-    const adjustedDeltaTime = deltaTime * 1;
-    // Calculate net force at the beginning of the time step
-    this.calculateNetForce();
-
-    // Calculate new acceleration based on the net force
-    let newAcceleration = p5.Vector.div(this.netForce, this.mass);
-
-    // Calculate the average acceleration (midpoint between current and new acceleration)
-    let averageAcceleration = p5.Vector.add(
-      this.acceleration,
-      newAcceleration,
-    ).mult(0.5);
-
-    if (this.acceleration.mag() < 1) {
-      this.acceleration.mult(0);
-    }
-
-    // Update velocity based on the average acceleration
-    this.velocity
-      .add(averageAcceleration.mult(adjustedDeltaTime))
-      .mult(this.velocityDamping);
-
-    if (this.velocity.mag() < 1) {
-      this.velocity.mult(0);
-    }
-
-    // Update position based on the new velocity
-    transform.position.add(p5.Vector.mult(this.velocity, adjustedDeltaTime));
-
-    // Assign the new acceleration to this.acceleration for the next frame
-    this.acceleration = newAcceleration;
+    let adjustedDeltaTime = deltaTime * 0.05;
 
     // Reset all forces to zero for the next frame. New forces will be calculated in the next frame
     for (let force in this.forces) {
-      this.forces[force][1].mult(0);
+      this.forces[force][1].set(0, 0, 0);
     }
+
+    // Check if the object is moving
+    const isMoving = this.velocity.mag() > 0.1;
 
     // Apply forces
     if (this.forces.appliedForce[0]) {
-      // Apply appliedForce logic here
+      // this.forces.appliedForce[1].add(new AppliedForce().force);
+    }
+
+    if (this.forces.dragForce[0]) {
+      this.forces.dragForce[1].add(
+        new DragForce(this.velocity, isMoving, transform).force,
+      );
     }
 
     if (this.forces.playerMovementForce[0]) {
       this.forces.playerMovementForce[1].add(
-        new PlayerMovementForce(playerMovementInput).force.mult(1),
+        new PlayerMovementForce(playerMovementInput).force,
       );
-    }
-
-    if (this.forces.dragForce[0]) {
-      // Apply dragForce logic here
     }
 
     if (this.forces.gravitationalForce[0]) {
@@ -136,12 +111,63 @@ class Physics {
           this.forces.normalForce[1],
           0.7,
           0.25,
+          isMoving,
         ).force,
       );
     }
 
+    // Calculate net force at the beginning of the time step
+    this.calculateNetForce();
+
+    // Calculate new acceleration based on the net force
+    let newAcceleration = p5.Vector.div(this.netForce, this.mass);
+
+    // Calculate the average acceleration (midpoint between current and new acceleration)
+    let averageAcceleration = p5.Vector.add(
+      this.acceleration,
+      newAcceleration,
+    ).mult(0.5);
+
+    if (this.acceleration.mag() < 1) {
+      this.acceleration.mult(0);
+    }
+
+    // Update velocity based on the average acceleration
+    this.velocity.add(averageAcceleration.mult(adjustedDeltaTime));
+
+    if (this.velocity.magSq() < 1) {
+      this.velocity.mult(0);
+    }
+
+    // Update position based on the new velocity
+    transform.position.add(p5.Vector.mult(this.velocity, adjustedDeltaTime));
+
+    if (transform.position.y - collider.radius + 16 < 0) {
+      transform.position.y = collider.radius - 16;
+    }
+    if (transform.position.y + collider.radius + 32 + 64 > height) {
+      transform.position.y = height - collider.radius - 32 - 64;
+    }
+    if (transform.position.x - collider.radius + 24 < 0) {
+      transform.position.x = collider.radius - 24;
+    }
+
+    if (transform.position.x + collider.radius + 38 > width) {
+      transform.position.x = width - collider.radius - 38;
+    }
+
+    // Check if the z component is below 0
+    if (transform.position.z < 0) {
+      // Set the z component to 0
+      transform.position.z = 0;
+      this.velocity.z = 0;
+    }
+
+    // Assign the new acceleration to this.acceleration for the next frame
+    this.acceleration = newAcceleration;
+
     // Log forces, position, velocity, and acceleration
-    this.logPhysics(transform);
+    // this.logPhysics(transform);
   }
 
   /**

@@ -9,9 +9,9 @@ class CircleCollider extends Collider {
    * @param {Vector} center - The center of the ellipse.
    * @param {number} radius - The radius of the ellipse.
    */
-  constructor(center, radius) {
+  constructor(center, diameter) {
     super(center);
-    this.radius = radius;
+    this.radius = diameter * 0.5;
   }
 
   update(transform) {

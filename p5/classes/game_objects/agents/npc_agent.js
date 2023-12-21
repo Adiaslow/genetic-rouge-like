@@ -3,7 +3,7 @@
  * @classdesc The generic NPC class. NPCs are Agents that have an NPC AI controller.
  * @extends{Agent}
  */
-class NPC extends Agent {
+class NPCAgent extends Agent {
   /**
    * @constructor
    * @param{Collider} collider The collider of the NPC.
@@ -12,8 +12,8 @@ class NPC extends Agent {
    * @param{Transform} transform The transform of the NPC.
    * @param{NPCController} npcController The NPCController of the NPC.
    */
-  constructor(collider, physics, renderer, transform, npcController) {
-    super(collider, physics, renderer, transform, controller);
+  constructor(collider, physics, renderer, shadow, transform, npcController) {
+    super(collider, physics, renderer, shadow, transform, controller);
     this.controller = npcController || null;
   }
 }

@@ -10,6 +10,6 @@ class Transform {
    */
   constructor(position, size) {
     this.position = position || createVector(0, 0, 0);
-    this.size = size || createVector(1, 1, 1);
+    this.size = size || createVector(50, 50, 50);
   }
 }

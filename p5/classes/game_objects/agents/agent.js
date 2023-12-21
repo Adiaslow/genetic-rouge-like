@@ -4,8 +4,9 @@
  * @abstract
  */
 class Agent extends GameObject {
-  constructor(collider, physics, renderer, transform, controller) {
-    super(collider, physics, renderer, transform);
+  constructor(collider, physics, renderer, shadow, transform, controller) {
+    super(collider, physics, renderer, shadow, transform);
+    this.shadow = shadow || null;
     this.controller = controller || null;
 
     if (this.constructor === Agent) {

@@ -11,12 +11,11 @@ class SpriteRenderer extends Renderer {
    * @param {number} height - The height of the sprite.
    * @param {boolean} isActive - Whether or not the renderer is active.
    */
-  constructor(sprite, width, height, hasShadow, isActive) {
+  constructor(sprite, width, height, isActive) {
     super(isActive);
     this.sprite = sprite; // The image or sprite to render
-    this.width = width || 50; // Default width
-    this.height = height || 50; // Default height
-    this.hasShadow = hasShadow || false;
+    this.width = width || 64; // Default width
+    this.height = height || 64; // Default height
   }
 
   /**
@@ -25,20 +24,10 @@ class SpriteRenderer extends Renderer {
    */
   render(transform) {
     if (this.isActive) {
-      if (this.hasShadow) {
-        fill(0, 0, 0, 50);
-        noStroke();
-        ellipse(
-          transform.position.x + this.width / 2,
-          transform.position.y + this.height - 10,
-          this.width,
-          this.height / 2,
-        );
-      }
       image(
         this.sprite,
         transform.position.x,
-        transform.position.y,
+        transform.position.y - transform.position.z,
         this.width,
         this.height,
       );

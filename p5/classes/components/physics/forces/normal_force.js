@@ -8,7 +8,8 @@
 class NormalForce extends Force {
   /**
    * @constructor
-   * @param {p5.Vector} force - The current forces acting on the object.
+   * @param {p5.Vector} netForce - The net force of the entity.
+   * @param {Transform} transform - The transform of the entity.
    */
   constructor(netForce, transform) {
     super();

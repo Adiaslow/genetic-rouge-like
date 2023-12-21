@@ -11,12 +11,17 @@ class GameObject {
    * @param {Renderer} renderer - The renderer of the entity.
    * @param {Transform} transform - The transform of the entity.
    */
-  constructor(collider, physics, renderer, transform) {
+  constructor(collider, physics, renderer, shadow, transform) {
     this.collider = collider || null;
     this.physics = physics || null;
     this.renderer = renderer || null;
+    this.shadow = shadow || null;
     this.transform =
-      transform || new Transform(createVector(0, 0, 0), createVector(1, 1, 1));
+      transform ||
+      new Transform(
+        createVector(width / 2, height / 2, 0),
+        createVector(50, 50, 50),
+      );
 
     if (this.constructor === GameObject) {
       throw new Error("Cannot instantiate abstract class GameObject.");
@@ -83,6 +88,10 @@ class GameObject {
 
     if (this.physics !== null) {
       this.physics.apply(this.transform);
+    }
+
+    if (this.shadow !== null) {
+      this.shadow.update(this.transform);
     }
 
     if (this.renderer !== null) {
