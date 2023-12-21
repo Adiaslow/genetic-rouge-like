@@ -4,6 +4,8 @@ let decorativeTilesProbability = 0.028;
 
 let frameCounter = 0;
 let fps = 0;
+let canvasWidth = 1024;
+let canvasHeight = 768;
 
 /**
  * @method preload
@@ -19,9 +21,15 @@ function preload() {
  * @methoddesc The p5.js setup function. Called once at the beginning of the program.
  */
 function setup() {
+<<<<<<< HEAD
   // Set up the canvas
-  createCanvas(1024, 768, P2D);
+  createCanvas(canvasWidth, canvasHeight, P2D);
   // getAudioContext().suspend();
+=======
+  background(bg);
+  // 1024 pixels / 32 pixels per tile = 32 tiles wide, 768 pixels / 32 pixels per tile = 24 tiles tall.
+  createCanvas(canvasWidth, canvasHeight);
+>>>>>>> f704ae70e09ac0443a9795e51ab321e010a870ab
 
   noSmooth(); // Disable smoothing for the entire canvas
   pixelDensity(1); // Set pixel density to 1 to avoid retina display issues
