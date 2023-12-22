@@ -19,15 +19,14 @@ class PlayerController extends Controller {
     this.attackCooldown = 0;
     this.attackCooldownDuration = 1000.0;
     this.isAttacking = false;
-    this.isHurt = false;
+    this.hurtCooldown = 0;
+    this.hurtCooldownDuration = 1000.0; // Adjust the duration as needed
 
     this.health = 100; // or any starting health value
     this.maxHealth = 100; // or any starting health value
     this.healthBarHeight = 20; // Height of the health bar
     this.healthBarColor = color(0, 255, 0); // Green color for healthy state
     this.damageColor = color(255, 0, 0); // Red color for damaged state
-    this.damageCooldown = 0;
-    this.damageCooldownDuration = 1000.0;
 
     this.playerAnimations = {
       idle: [false, playerAnimations.idle],
@@ -183,10 +182,27 @@ class PlayerController extends Controller {
   }
 
   handleAnimationAndAttackInput(transform, physics, playerMovementInput) {
-    let isAttacking = false;
+    // Check and handle the hurt animation
+    if (this.isHurt) {
+      if (this.hurtCooldown > 0) {
+        this.hurtCooldown -= deltaTime;
+        this.currentAnimation = this.playerAnimations.hurt[1];
+        this.currentAnimation.play();
 
-    if (this.attackCooldown <= 0 && !this.isAttacking && mouseIsPressed) {
+        if (
+          this.currentAnimation.getCurrentFrame() ===
+          this.currentAnimation.numFrames() - 1
+        ) {
+          this.isHurt = false; // Reset isHurt when hurt animation finishes
+        }
+      }
+      return false; // Do not process attack input if hurt
+    }
+
+    // Handle attack input
+    if (this.attackCooldown <= 0 && mouseIsPressed) {
       let attackAnimation;
+      // Determine the correct attack animation based on player input
       switch (true) {
         case playerMovementInput.x < 0:
           attackAnimation = this.playerAnimations.attackLeft[1];
@@ -202,67 +218,74 @@ class PlayerController extends Controller {
           break;
       }
 
-      attackAnimation.reset();
       this.currentAnimation = attackAnimation;
-      this.attackCooldown = this.attackCooldownDuration;
-      this.isAttacking = true;
-    }
-
-    if (this.isHurt) {
+      this.currentAnimation.reset();
       this.currentAnimation.play();
-      isHurt = true;
+      this.isAttacking = true;
+      this.attackCooldown = this.attackCooldownDuration;
+    }
+
+    if (this.isAttacking) {
+      // Process the attack animation
+      this.currentAnimation.play();
+
       if (
         this.currentAnimation.getCurrentFrame() ===
         this.currentAnimation.numFrames() - 1
       ) {
-        this.isHurt = false;
+        this.isAttacking = false; // Reset isAttacking when attack animation finishes
       }
-    } else if (this.isAttacking) {
-      // Render the attack animation
-      this.currentAnimation.play(); // Assuming play() method exists
-      isAttacking = true;
-
-      // Check if the attack animation has finished playing
-      if (
-        this.currentAnimation.getCurrentFrame() ===
-        this.currentAnimation.numFrames() - 1
-      ) {
-        this.isAttacking = false;
-      }
-
-      this.attackCooldown = Math.max(0, this.attackCooldown - deltaTime);
-      return isAttacking;
     }
 
-    // Update movement or idle animations here
-    switch (true) {
-      case playerMovementInput.x > 0:
-        this.currentAnimation = this.playerAnimations.walkRight[1];
-        break;
-      case playerMovementInput.x < 0:
-        this.currentAnimation = this.playerAnimations.walkLeft[1];
-        break;
-      case playerMovementInput.x === 0 && playerMovementInput.y !== 0:
-        // Adjust this condition based on your specific movement logic
-        this.currentAnimation = this.playerAnimations.walkLeft[1];
-        break;
-      case playerMovementInput.mag() === 0:
-        this.currentAnimation = this.playerAnimations.idle[1];
-        break;
+    // Update movement or idle animations if not attacking or hurt
+    if (!this.isAttacking && !this.isHurt) {
+      // Determine and set the correct movement or idle animation
+      switch (true) {
+        case playerMovementInput.x > 0:
+          this.currentAnimation = this.playerAnimations.walkRight[1];
+          break;
+        case playerMovementInput.x < 0:
+          this.currentAnimation = this.playerAnimations.walkLeft[1];
+          break;
+        case playerMovementInput.x === 0 && playerMovementInput.y !== 0:
+          // Adjust this condition based on your specific movement logic
+          this.currentAnimation = this.playerAnimations.walkLeft[1];
+          break;
+        case playerMovementInput.mag() === 0:
+          this.currentAnimation = this.playerAnimations.idle[1];
+          break;
+      }
     }
 
+    // Reduce cooldowns
     this.attackCooldown = Math.max(0, this.attackCooldown - deltaTime);
+    this.hurtCooldown = Math.max(0, this.hurtCooldown - deltaTime);
 
-    return isAttacking;
+    return this.isAttacking;
   }
 
   takeDamage(damage) {
-    if (this.damageCooldown <= 0) {
-      this.health -= damage;
+    if (this.damageCooldown <= 0 && !this.isHurt) {
+      this.health = Math.max(0, this.health - damage); // Ensure health does not go negative
       this.damageCooldown = this.damageCooldownDuration;
-      this.currentAnimation = this.playerAnimations.hurt[1];
+
+      if (this.health <= 0) {
+        this.currentAnimation = this.playerAnimations.death[1];
+        this.currentAnimation.reset();
+        this.currentAnimation.play();
+        // Add any additional logic for player death
+      } else {
+        this.isHurt = true;
+        this.hurtCooldown = this.hurtCooldownDuration;
+        this.currentAnimation = this.playerAnimations.hurt[1];
+        this.currentAnimation.reset();
+        this.currentAnimation.play();
+      }
+      return false;
     }
+    return true;
   }
+
   drawHealthBar(transform) {
     // Calculate the position for drawing the health bar above the enemy's head
     const barX = 10; // Adjust based on your enemy's size

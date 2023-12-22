@@ -115,6 +115,8 @@ class EnemyController extends Controller {
     const proximityThreshold = width;
     // Scale the score awarded based on how close the enemy gets to the player.
     // const proximityScore = 1 / dist;
+    // const proximityScore = 0;
+
     const proximityScore =
       dist < proximityThreshold ? proximityThreshold - dist : 0;
 
@@ -265,9 +267,10 @@ class EnemyController extends Controller {
     ) {
       let damagedPlayer = player.controller.takeDamage(this.attackDamage);
       if (damagedPlayer) {
-        this.score += 10;
+        this.score += 1;
       }
     }
+
     // Apply the final movement vector to the enemy's position
     transform.position.add(enemyMovementInput);
 
