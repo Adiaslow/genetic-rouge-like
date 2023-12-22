@@ -1,54 +1,66 @@
 /**
- * @class Enemy
- * @classdesc The generic Enemy class. Enemies are Agents that have an enemy AI controller.
- * @abstract
+ * @class EnemyAgent
+ * @classdesc The EnemyAgent class. Enemies are Agents that have an enemy AI controller.
+ * @extends Agent
  */
 class EnemyAgent extends Agent {
-  /**
-   * @constructor
-   * @param {Collider} collider The collider of the player.
-   * @param {Physics} physics The physics of the player.
-   * @param {Renderer} renderer The renderer of the player.
-   * @param {Shadow} shadow The shadow of the player.
-   * @param {Transform} transform The transform of the player.
-   * @param {PlayerController} controller The player controller.
-   */
-  constructor(collider, physics, renderer, shadow, transform, enemyController) {
-    super(collider, physics, renderer, shadow, transform, enemyController);
-    console.log("Player Spawned!");
+  constructor(collider, physics, shadow, transform, controller) {
+    super(collider, physics, shadow, transform, controller);
   }
 
-  /**
-   * @method update
-   * @methoddesc Updates the enemy and its components.
-   */
   update(player) {
-    let enemyMovementInput;
-
     if (this.collider !== null) {
       this.collider.update(this.transform);
     }
 
+    let enemyMovementInput = createVector(0, 0, 0);
     if (this.controller !== null) {
-      enemyMovementInput = this.controller.handleInput(
-        this.transform,
-        this.physics,
-        player,
+      enemyMovementInput.set(
+        this.controller.handleInput(
+          this.collider,
+          this.transform,
+          this.physics,
+          player,
+        ),
       );
     }
 
     if (this.physics !== null) {
-      // Now `playerMovementInput` is visible here
+      // console.log(enemyMovementInput);
       this.physics.apply(this.transform, this.collider, enemyMovementInput);
     }
 
     if (this.shadow !== null) {
       this.shadow.render(this.transform);
     }
-    /*
-    if (this.renderer !== null) {
-      this.renderer.render(this.transform);
-    }
-    */
+  }
+
+  clone() {
+    const cloneCollider = new CircleCollider(
+      this.collider.center.copy(),
+      this.collider.radius,
+    );
+    const clonePhysics = new Physics(
+      this.physics.mass,
+      this.physics.velocity.copy(),
+      this.physics.acceleration.copy(),
+      this.physics.maxSpeed,
+    );
+    const cloneShadowRenderer = new ShadowRenderer(this.shadow.size);
+    const cloneTransform = new Transform(
+      this.transform.position.copy(),
+      this.transform.size.copy(),
+    );
+    const cloneController = new EnemyController(this.controller.brain);
+
+    const clone = new EnemyAgent(
+      cloneCollider,
+      clonePhysics,
+      cloneShadowRenderer,
+      cloneTransform,
+      cloneController,
+    );
+    //console.log(clone);
+    return clone;
   }
 }

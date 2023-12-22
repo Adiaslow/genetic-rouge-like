@@ -7,7 +7,7 @@ class PlayerController extends Controller {
   /**
    * @constructor
    */
-  constructor() {
+  constructor(playerAnimations, fxAnimations) {
     super();
     this.jumpCooldown = 0;
     this.jumpCooldownDuration = 400.0;
@@ -20,23 +20,31 @@ class PlayerController extends Controller {
     this.attackCooldownDuration = 1000.0;
     this.isAttacking = false;
 
+    this.health = 100; // or any starting health value
+    this.maxHealth = 100; // or any starting health value
+    this.healthBarHeight = 20; // Height of the health bar
+    this.healthBarColor = color(0, 255, 0); // Green color for healthy state
+    this.damageColor = color(255, 0, 0); // Red color for damaged state
+    this.damageCooldown = 0;
+    this.damageCooldownDuration = 1000.0;
+
     this.playerAnimations = {
-      idle: [false, loadImage("sprites/crab/crab-idle.gif")],
-      walkLeft: [false, loadImage("sprites/crab/crab-walk-left.gif")],
-      walkRight: [false, loadImage("sprites/crab/crab-walk-right.gif")],
-      hurt: [false, loadImage("sprites/crab/crab-hurt.gif")],
-      death: [false, loadImage("sprites/crab/crab-death.gif")],
-      attackLeft: [false, loadImage("sprites/crab/crab-attack-left.gif")],
-      attackRight: [false, loadImage("sprites/crab/crab-attack-right.gif")],
+      idle: [false, playerAnimations.idle],
+      walkLeft: [false, playerAnimations.walkLeft],
+      walkRight: [false, playerAnimations.walkRight],
+      hurt: [false, playerAnimations.hurt],
+      death: [false, playerAnimations.death],
+      attackLeft: [false, playerAnimations.attackLeft],
+      attackRight: [false, playerAnimations.attackRight],
     };
 
     this.currentAnimation = this.playerAnimations.idle[1];
 
     this.fxAnimations = {
-      jumpUp: [false, loadImage("sprites/smoke/jump-smoke.gif")],
-      jumpDown: [false, loadImage("sprites/smoke/jump-smoke.gif")],
-      pivotLeft: [false, loadImage("sprites/smoke/pivot-left-smoke.gif")],
-      pivotRight: [false, loadImage("sprites/smoke/pivot-right-smoke.gif")],
+      jumpUp: [false, fxAnimations.jumpUp],
+      jumpDown: [false, fxAnimations.jumpUp],
+      pivotLeft: [false, fxAnimations.pivotLeft],
+      pivotRight: [false, fxAnimations.pivotRight],
     };
   }
 
@@ -178,7 +186,6 @@ class PlayerController extends Controller {
 
     if (this.attackCooldown <= 0 && !this.isAttacking && mouseIsPressed) {
       let attackAnimation;
-
       switch (true) {
         case playerMovementInput.x < 0:
           attackAnimation = this.playerAnimations.attackLeft[1];
@@ -239,6 +246,50 @@ class PlayerController extends Controller {
     return isAttacking;
   }
 
+  takeDamage(damage) {
+    if (this.damageCooldown <= 0) {
+      this.health -= damage;
+      this.damageCooldown = this.damageCooldownDuration;
+    }
+  }
+  drawHealthBar(transform) {
+    // Calculate the position for drawing the health bar above the enemy's head
+    const barX = 20; // Adjust based on your enemy's size
+    const barY = 40; // Adjust based on your enemy's size and position
+
+    // Draw the background of the health bar (full health)
+    fill(255);
+    rect(barX, barY, 256, this.healthBarHeight);
+
+    // Draw the actual health bar based on the current health
+    const healthWidth = (this.health / this.maxHealth) * 256;
+    // Calculate the health ratio
+    let healthRatio = this.health / this.maxHealth;
+
+    // Calculate the RGB values based on the health ratio
+    let r, g, b;
+    if (healthRatio >= 0.5) {
+      // Green to yellow transition
+      r = 255 * (1 - healthRatio) * 2;
+      g = 255;
+      b = 0;
+    } else {
+      // Yellow to red transition
+      r = 255;
+      g = 255 * healthRatio * 2;
+      b = 0;
+    }
+
+    // Set the fill color
+    fill(r, g, b);
+    rect(barX, barY, healthWidth, this.healthBarHeight);
+    textSize(18);
+    fill(0);
+    text(this.health, 24, 56);
+
+    this.damageCooldown = Math.max(0, this.damageCooldown - deltaTime);
+  }
+
   /**
    * @method handleInput
    * @methoddesc Handles input for the Player class.
@@ -281,6 +332,7 @@ class PlayerController extends Controller {
       physics,
       playerMovementInput,
     );
+    this.drawHealthBar(transform); // Draw the health bar
 
     image(
       this.currentAnimation,

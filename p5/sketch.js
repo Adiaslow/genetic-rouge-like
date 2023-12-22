@@ -7,6 +7,10 @@ let fps = 0;
 let canvasWidth = 1024;
 let canvasHeight = 768;
 
+let playerAnimations;
+let fxAnimations;
+let jellyFishAnimations;
+
 /**
  * @method preload
  * @methoddesc The p5.js preload function. Called once before setup.
@@ -14,6 +18,30 @@ let canvasHeight = 768;
 function preload() {
   // Load the tilemap sprite sheet
   tilemapSpriteSheet = loadImage("sprites/tiles/underwater-sprite-sheet.png");
+
+  playerAnimations = {
+    idle: loadImage("sprites/crab/crab-idle.gif"),
+    walkLeft: loadImage("sprites/crab/crab-walk-left.gif"),
+    walkRight: loadImage("sprites/crab/crab-walk-right.gif"),
+    hurt: loadImage("sprites/crab/crab-hurt.gif"),
+    death: loadImage("sprites/crab/crab-death.gif"),
+    attackLeft: loadImage("sprites/crab/crab-attack-left.gif"),
+    attackRight: loadImage("sprites/crab/crab-attack-right.gif"),
+  };
+
+  fxAnimations = {
+    jumpUp: loadImage("sprites/smoke/jump-smoke.gif"),
+    pivotLeft: loadImage("sprites/smoke/pivot-left-smoke.gif"),
+    pivotRight: loadImage("sprites/smoke/pivot-right-smoke.gif"),
+  };
+
+  jellyFishAnimations = {
+    idle: loadImage("sprites/jelly-fish/jelly-fish-idle.gif"),
+    walk: loadImage("sprites/jelly-fish/jelly-fish-walk.gif"),
+    hurt: loadImage("sprites/jelly-fish/jelly-fish-hurt.gif"),
+    death: loadImage("sprites/jelly-fish/jelly-fish-death.gif"),
+    attack: loadImage("sprites/jelly-fish/jelly-fish-attack.gif"),
+  };
 }
 
 /**
@@ -21,21 +49,23 @@ function preload() {
  * @methoddesc The p5.js setup function. Called once at the beginning of the program.
  */
 function setup() {
-<<<<<<< HEAD
   // Set up the canvas
+  // frameRate(10);
   createCanvas(canvasWidth, canvasHeight, P2D);
   // getAudioContext().suspend();
-=======
-  background(bg);
+
   // 1024 pixels / 32 pixels per tile = 32 tiles wide, 768 pixels / 32 pixels per tile = 24 tiles tall.
   createCanvas(canvasWidth, canvasHeight);
->>>>>>> f704ae70e09ac0443a9795e51ab321e010a870ab
 
   noSmooth(); // Disable smoothing for the entire canvas
   pixelDensity(1); // Set pixel density to 1 to avoid retina display issues
 
   // Initialize player properties
   let playerStartingPosition = createVector(width / 2, height / 2, 0);
+  const playerStartingVelocity = createVector(0, 0, 0);
+  const playerStartingAcceleration = createVector(0, 0, 0);
+  const playerStartingForce = createVector(0, 0, 0);
+
   let playerSize = createVector(64, 64, 64);
 
   // Create a new player object
@@ -43,18 +73,18 @@ function setup() {
     new CircleCollider(playerStartingPosition, 32),
     new Physics(
       3,
-      createVector(0, 0, 0),
-      createVector(0, 0, 0),
-      createVector(0, 0, 0),
+      playerStartingVelocity,
+      playerStartingAcceleration,
+      playerStartingForce,
     ),
-    null,
     new ShadowRenderer(playerSize.x),
     new Transform(playerStartingPosition, playerSize),
-    new PlayerController(),
+    new PlayerController(playerAnimations, fxAnimations),
   );
 
-  enemyManager = new EnemyManager(player);
-  enemyManager.initialize();
+  EnemyController.setImages(jellyFishAnimations);
+
+  enemyManager = new EnemyManager(player, 4, 5, 250);
 
   initializeTileMap();
 }
@@ -118,6 +148,7 @@ function initializeTileMap() {
  * @methoddesc The p5.js draw function. Called once per frame.
  */
 function draw() {
+  clear();
   // Draw tilemap
   for (let i = 0; i < 16 * 12; i++) {
     tileMap[i].renderer.render(tileMap[i].transform);

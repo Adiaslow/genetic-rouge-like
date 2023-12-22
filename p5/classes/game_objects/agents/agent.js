@@ -4,10 +4,9 @@
  * @abstract
  */
 class Agent extends GameObject {
-  constructor(collider, physics, renderer, shadow, transform, controller) {
-    super(collider, physics, renderer, shadow, transform);
-    this.shadow = shadow || null;
-    this.controller = controller || null;
+  constructor(collider, physics, shadow, transform, controller) {
+    super(collider, physics, null, shadow, transform);
+    this.controller = controller;
 
     if (this.constructor === Agent) {
       throw new Error("Cannot instantiate abstract class Agent.");

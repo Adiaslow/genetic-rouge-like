@@ -13,8 +13,8 @@ class PlayerAgent extends Agent {
    * @param {Transform} transform The transform of the player.
    * @param {PlayerController} controller The player controller.
    */
-  constructor(collider, physics, renderer, shadow, transform, controller) {
-    super(collider, physics, renderer, shadow, transform, controller);
+  constructor(collider, physics, shadow, transform, controller) {
+    super(collider, physics, shadow, transform, controller);
     console.log("Player Spawned!");
   }
 
@@ -37,17 +37,11 @@ class PlayerAgent extends Agent {
     }
 
     if (this.physics !== null) {
-      // Now `playerMovementInput` is visible here
       this.physics.apply(this.transform, this.collider, playerMovementInput);
     }
 
     if (this.shadow !== null) {
       this.shadow.render(this.transform);
     }
-    /*
-    if (this.renderer !== null) {
-      this.renderer.render(this.transform);
-    }
-    */
   }
 }

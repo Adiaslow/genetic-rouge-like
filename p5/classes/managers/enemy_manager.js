@@ -3,114 +3,80 @@
  * @classdesc Manages the enemies in the game.
  */
 class EnemyManager {
-  constructor(player) {
-    this.cycles = 100;
-    this.numberOfPopulations = 4;
-    this.populations = [];
-    this.move = false;
-    this.maxLifespan = 250;
-    this.target;
-    this.targetVel;
-    this.angle = 0;
-    this.ps = [];
-
-    this.enemies = [];
+  constructor(player, numPopulations, cycles, maxLifeSpan) {
     this.player = player;
-  }
+    this.numPopulations = numPopulations;
+    this.maxLifeSpan = maxLifeSpan;
+    this.populations = [];
 
-  initialize() {
-    for (let i = 0; i < 5; i++) {
-      let enemyStartingPosition = createVector(
-        random(0, width),
-        random(0, height),
-        0,
-      );
-      this.enemies.push(
-        new EnemyAgent(
-          new CircleCollider(enemyStartingPosition, 32),
-          new Physics(
-            3,
-            createVector(0, 0, 0),
-            createVector(0, 0, 0),
-            createVector(0, 0, 0),
-          ),
-          null,
-          new ShadowRenderer(64),
-          new Transform(enemyStartingPosition, createVector(32, 32, 32)),
-          new EnemyController(),
-        ),
-      );
+    for (let i = 0; i < numPopulations; i++) {
+      this.populations.push(new EnemyPopulation(10, player));
     }
+
+    this.populationScores = Array(numPopulations).fill(0);
+
+    // Add a frame counter and update interval
+    this.frameCounter = 0;
+    this.updateInterval = 4; // Adjust the interval as needed
   }
 
   update() {
-    for (let i = 0; i < 5; i++) {
-      this.enemies[i].update(this.player);
+    this.frameCounter++;
+    this.updatePopulations();
+    this.updatePopulationScores();
+    this.adjustMaxLifeSpan();
+    this.performNaturalSelection();
+
+    /*
+    // Check if the frame counter has reached the update interval
+    if (this.frameCounter >= this.updateInterval) {
+      this.frameCounter = 0; // Reset the frame counter
+
+    }
+    */
+    fill(255);
+    textSize(24);
+    for (let i = 0; i < this.numPopulations; i++) {
+      text(
+        "Population " + i + " Fitness: " + this.populations[i].bestFitness,
+        width - 500,
+        30 * (i + 1),
+      );
     }
   }
 
-  /*
-  initialize() {
-    for (let i = 0; i < this.numberOfPopulations; i++) {
-      this.populations.push(new Population(20, i));
-    }
-
-    target = createVector(width / 2, height / 2);
-    targetVel = createVector(0, 0);
-
-    for (let i = 0; i < this.numberOfPopulations; i++) {
-      this.populations[i].updateAlive();
+  updatePopulations() {
+    for (const population of this.populations) {
+      if (!population.done()) population.updateAlive();
     }
   }
 
-  update() {
-    for (let i = 0; i < this.cycles; i++) {
-      if (!this.populations[0].done()) {
-        this.populations[0].updateAlive(i == 0);
-      }
+  adjustMaxLifeSpan() {
+    if (this.populations[0].generation % 20 === 0) this.maxLifeSpan += 10;
+  }
 
-      if (!this.populations[1].done()) {
-        this.populations[1].updateAlive(i == 0);
-      }
+  updatePopulationScores() {
+    // Calculate the average score for each population
+    const averageScores = this.populations.map((population) =>
+      population.getAverageScore(),
+    );
 
-      if (!this.populations[2].done()) {
-        this.populations[2].updateAlive(i == 0);
-      }
+    // Optionally, you can reset scores for each new evaluation
+    // this.populationScores.fill(0);
 
-      if (!this.populations[3].done()) {
-        this.populations[3].updateAlive(i == 0);
-      } else {
-        this.target = createVector(width / 2, height / 2);
-        this.angle = Math.random() * 360;
+    // Update scores for all populations, not just the winning one, to track progress over time
+    averageScores.forEach((averageScore, index) => {
+      this.populationScores[index] = averageScore;
+    });
 
-        if (this.population[0].generation % 20 == 0) this.maxLifespan += 10;
+    // Log the scores to monitor changes over time; remove logs in production
+    // console.log("Average scores:", averageScores);
+    // console.log("Population scores:", this.populationScores);
+  }
 
-        let max = Math.max(
-          this.populations[0].getAverageScore(),
-          this.populations[0].getAverageScore(),
-          this.populations[0].getAverageScore(),
-          this.populations[0].getAverageScore(),
-        );
-        if (max == this.population[0].getAverageScore()) p1++;
-        else if (max == this.populations[0].getAverageScore()) p2++;
-        else if (max == this.populations[0].getAverageScore()) p3++;
-        else if (max == this.populations[0].getAverageScore()) p4++;
-
-        this.populations[0].naturalSelection();
-        this.populations[0].naturalSelection();
-        this.populations[0].naturalSelection();
-        this.populations[0].naturalSelection();
-      }
-
-      if (move) {
-        this.angle += 0.00025;
-        this.angle = this.angle % 360;
-        this.target.x =
-          width / 2 + Math.cos((this.angle * 180) / Math.PI) * 150;
-        this.target.y =
-          height / 2 + Math.sin((this.angle * 180) / Math.PI) * 100;
-      }
+  performNaturalSelection() {
+    for (const population of this.populations) {
+      population.naturalSelection();
     }
   }
-  */
 }

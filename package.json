@@ -1,0 +1,12 @@
+{
+  "name": "genetic-rouge-like",
+  "version": "1.0.0",
+  "description": "A rougelite about a crab who is a hair stylist. Enemy AI is controlled by genetic neural network.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -10,6 +10,6 @@ class PlayerMovementForce extends Force {
    */
   constructor(force) {
     super();
-    this.force = force.mult(createVector(8, 6, 100));
+    this.force = force.mult(8, 6, 100);
   }
 }
