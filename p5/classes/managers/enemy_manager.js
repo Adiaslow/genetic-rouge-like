@@ -34,6 +34,7 @@ class EnemyManager {
 
     }
     */
+    /*
     fill(255);
     textSize(24);
     for (let i = 0; i < this.numPopulations; i++) {
@@ -43,6 +44,7 @@ class EnemyManager {
         30 * (i + 1),
       );
     }
+    */
   }
 
   updatePopulations() {

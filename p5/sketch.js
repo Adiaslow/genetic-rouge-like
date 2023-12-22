@@ -162,9 +162,9 @@ function draw() {
     fps = frameRate();
   }
   frameCounter++;
-  fill(255);
-  textSize(24);
-  text("FPS: " + Math.floor(fps), 20, 30);
+  fill(0);
+  textSize(18);
+  text("FPS: " + Math.floor(fps), 12, 56);
 
   // Update the player
   player.update();

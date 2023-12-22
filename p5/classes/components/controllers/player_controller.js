@@ -19,6 +19,7 @@ class PlayerController extends Controller {
     this.attackCooldown = 0;
     this.attackCooldownDuration = 1000.0;
     this.isAttacking = false;
+    this.isHurt = false;
 
     this.health = 100; // or any starting health value
     this.maxHealth = 100; // or any starting health value
@@ -207,7 +208,16 @@ class PlayerController extends Controller {
       this.isAttacking = true;
     }
 
-    if (this.isAttacking) {
+    if (this.isHurt) {
+      this.currentAnimation.play();
+      isHurt = true;
+      if (
+        this.currentAnimation.getCurrentFrame() ===
+        this.currentAnimation.numFrames() - 1
+      ) {
+        this.isHurt = false;
+      }
+    } else if (this.isAttacking) {
       // Render the attack animation
       this.currentAnimation.play(); // Assuming play() method exists
       isAttacking = true;
@@ -250,12 +260,13 @@ class PlayerController extends Controller {
     if (this.damageCooldown <= 0) {
       this.health -= damage;
       this.damageCooldown = this.damageCooldownDuration;
+      this.currentAnimation = this.playerAnimations.hurt[1];
     }
   }
   drawHealthBar(transform) {
     // Calculate the position for drawing the health bar above the enemy's head
-    const barX = 20; // Adjust based on your enemy's size
-    const barY = 40; // Adjust based on your enemy's size and position
+    const barX = 10; // Adjust based on your enemy's size
+    const barY = 10; // Adjust based on your enemy's size and position
 
     // Draw the background of the health bar (full health)
     fill(255);
@@ -285,7 +296,7 @@ class PlayerController extends Controller {
     rect(barX, barY, healthWidth, this.healthBarHeight);
     textSize(18);
     fill(0);
-    text(this.health, 24, 56);
+    text(this.health, 12, 26);
 
     this.damageCooldown = Math.max(0, this.damageCooldown - deltaTime);
   }
