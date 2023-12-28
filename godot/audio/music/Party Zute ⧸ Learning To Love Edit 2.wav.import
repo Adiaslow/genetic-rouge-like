@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://blrolu2vgw5cl"
+path="res://.godot/imported/Party Zute ⧸ Learning To Love Edit 2.wav-7ce24e96ac98413309166f0ef7e27ed4.sample"
+
+[deps]
+
+source_file="res://audio/music/Party Zute ⧸ Learning To Love Edit 2.wav"
+dest_files=["res://.godot/imported/Party Zute ⧸ Learning To Love Edit 2.wav-7ce24e96ac98413309166f0ef7e27ed4.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=2
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=0
