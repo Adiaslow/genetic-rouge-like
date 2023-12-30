@@ -1,0 +1,2 @@
+class_name HBoxesManager
+extends Node2D

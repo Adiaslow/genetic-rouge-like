@@ -1,7 +1,7 @@
 class_name HurtBox2D
 extends Area2D
 
-@onready var hit_sound : AudioStreamPlayer = get_node("../HitSound")
+# @onready var hit_sound : AudioStreamPlayer = get_node("../HitSound")
 
 func _init():
 	collision_layer = 0
@@ -26,10 +26,10 @@ func _on_area_entered(hit_box: HitBox2D) -> void:
 		# Enemy hit by player
 		process_hit(hit_box, entry_direction)
 		hit_was_successful = true
-
 	if hit_was_successful:
-		hit_sound.pitch_scale = randf_range(1.8,2)
-		hit_sound.play()
+		# hit_sound.pitch_scale = randf_range(1.8,2)
+		# hit_sound.play()
+		pass
 
 func process_hit(hit_box: HitBox2D, entry_direction: Vector2) -> void:
 	if owner.has_method("take_damage"):

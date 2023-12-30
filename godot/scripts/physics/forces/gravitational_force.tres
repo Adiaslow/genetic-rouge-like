@@ -1,8 +1,0 @@
-[gd_resource type="Resource" script_class="GravitationalForce" load_steps=2 format=3 uid="uid://cn1pwojblr7vy"]
-
-[ext_resource type="Script" path="res://scripts/physics/forces/gravitational_force.gd" id="1_wbeve"]
-
-[resource]
-script = ExtResource("1_wbeve")
-g = null
-force = null

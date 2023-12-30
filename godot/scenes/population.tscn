@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ugj2hvaqg0cr"]
 
-[ext_resource type="Script" path="res://scripts/enemies/classes/population.gd" id="1_11ica"]
+[ext_resource type="Script" path="res://scripts/enemy_ai/population.gd" id="1_11ica"]
 
 [node name="Population" type="Node2D"]
 script = ExtResource("1_11ica")

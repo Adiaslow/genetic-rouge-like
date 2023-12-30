@@ -1,7 +1,0 @@
-[gd_resource type="Resource" script_class="MovementInputForce" load_steps=2 format=3 uid="uid://cs7r54xmhh1xr"]
-
-[ext_resource type="Script" path="res://scripts/physics/forces/movement_input_force.gd" id="1_eekxw"]
-
-[resource]
-script = ExtResource("1_eekxw")
-input_scaling_factor = Vector3(4, 3, 10)

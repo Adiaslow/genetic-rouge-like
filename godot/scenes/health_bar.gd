@@ -11,5 +11,6 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	player_health = player.health
-	health_bar.value = player_health
+	# player_health = player.health
+	# health_bar.value = player_health
+	pass

@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://3co3tcqplhg5"]
 
-[ext_resource type="Script" path="res://scripts/enemies/classes/artificial_brain.gd" id="1_xm8vu"]
+[sub_resource type="GDScript" id="GDScript_453n0"]
 
 [node name="Brain" type="Node2D"]
-script = ExtResource("1_xm8vu")
+script = SubResource("GDScript_453n0")
