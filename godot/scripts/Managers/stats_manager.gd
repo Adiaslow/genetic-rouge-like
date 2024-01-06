@@ -1,2 +1,4 @@
 class_name StatsManager
-extends Node
+extends Node2D
+
+@export var health: float = 100

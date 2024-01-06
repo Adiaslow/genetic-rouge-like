@@ -1,26 +1,37 @@
-[gd_scene load_steps=8 format=3 uid="uid://ypi3s121bl6y"]
+[gd_scene load_steps=25 format=3 uid="uid://ypi3s121bl6y"]
 
 [ext_resource type="Script" path="res://scripts/Managers/enemy_manager.gd" id="1_fpfs4"]
+[ext_resource type="Script" path="res://scripts/Managers/stats_manager.gd" id="2_1ibtb"]
 [ext_resource type="Script" path="res://scripts/Managers/audio_manager.gd" id="2_guca3"]
 [ext_resource type="SpriteFrames" uid="uid://jm2sr4iscle5" path="res://graphics/sprite_frames/jelly_fish.tres" id="2_v572b"]
 [ext_resource type="Script" path="res://scripts/Managers/h_boxes.gd" id="3_0bfht"]
+[ext_resource type="Script" path="res://scripts/enemy_ai/brain.gd" id="3_2x63c"]
+[ext_resource type="Script" path="res://scripts/Managers/classical_physics_manager.gd" id="4_1s258"]
+[ext_resource type="SpriteFrames" uid="uid://dltxuujnwpod5" path="res://graphics/sprite_frames/player_vfx.tres" id="4_mbvrk"]
 [ext_resource type="Script" path="res://scripts/Managers/heuristic_physics_manager.gd" id="6_pbvvu"]
+[ext_resource type="AudioStream" uid="uid://kdmcih8we1th" path="res://audio/fx/dash.wav" id="7_orr77"]
+[ext_resource type="AudioStream" uid="uid://co2db81g6tptx" path="res://audio/fx/crab_hurt.wav" id="8_xdba6"]
+[ext_resource type="AudioStream" uid="uid://b06akq6jywac7" path="res://audio/fx/jump.wav" id="9_fqcgt"]
+[ext_resource type="AudioStream" uid="uid://jai5pyjjofs2" path="res://audio/fx/crab_melee.wav" id="10_2icqw"]
+[ext_resource type="AudioStream" uid="uid://i3pibin7y47h" path="res://audio/fx/crab_walk.wav" id="11_o3xn0"]
+[ext_resource type="Script" path="res://scripts/Managers/graphics_manager.gd" id="13_xofcc"]
+[ext_resource type="SpriteFrames" uid="uid://de6st2b031xmn" path="res://graphics/sprite_frames/crab.tres" id="14_t2rwe"]
+[ext_resource type="Texture2D" uid="uid://cqg53ahlk2blu" path="res://graphics/sprites/ellipse_shadow.png" id="16_v2hmw"]
+[ext_resource type="Script" path="res://scripts/Managers/timer_manager.gd" id="17_p62wa"]
 
-[sub_resource type="GDScript" id="GDScript_1tlm2"]
-script/source = "class_name AnimationManager
-extends Node
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ncuh3"]
+radius = 5.0
+height = 35.0
 
-@onready var character: AnimatedSprite2D = $Character
-@onready var vfx: AnimatedSprite2D = $VFX
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_quyaa"]
 
-@export var character_frames: SpriteFrames
-@export var character_speed_scale: float
-@export var vfx_frames: SpriteFrames
-@export var vfx_speed_scale: float
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wiaj1"]
 
-"
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_jnw0q"]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_gh8kk"]
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uqcws"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_oonnn"]
 
 [node name="Enemy" type="RigidBody2D"]
 mass = 3.0
@@ -28,21 +39,150 @@ gravity_scale = 2.66454e-15
 lock_rotation = true
 script = ExtResource("1_fpfs4")
 
-[node name="AnimationManager" type="AnimatedSprite2D" parent="."]
-z_index = 1
-scale = Vector2(2, 2)
-sprite_frames = ExtResource("2_v572b")
-animation = &"idle"
-autoplay = "idle"
-speed_scale = 2.0
-script = SubResource("GDScript_1tlm2")
+[node name="Stats" type="Node2D" parent="."]
+script = ExtResource("2_1ibtb")
 
-[node name="CollisionManager" type="CollisionShape2D" parent="."]
-shape = SubResource("CapsuleShape2D_gh8kk")
+[node name="Brain" type="Node2D" parent="."]
+script = ExtResource("3_2x63c")
+
+[node name="PhysicsCollider" type="CollisionShape2D" parent="."]
+z_index = 2
+position = Vector2(2.08165e-12, 30)
+rotation = 1.5708
+shape = SubResource("CapsuleShape2D_ncuh3")
+
+[node name="ClassicalPhysics" type="Node2D" parent="."]
+script = ExtResource("4_1s258")
+
+[node name="HeuristicPhysics" type="Node2D" parent="."]
+script = ExtResource("6_pbvvu")
+dash_force_multiplier = 5000.0
+
+[node name="Audio" type="Node2D" parent="."]
+script = ExtResource("2_guca3")
+dash_sound = ExtResource("7_orr77")
+dash_volume_db = -10.0
+dash_pitch_bounds = Vector2(1.2, 1.7)
+hurt_sound = ExtResource("8_xdba6")
+jump_sound = ExtResource("9_fqcgt")
+jump_volume_db = -10.0
+melee_sound = ExtResource("10_2icqw")
+melee_volume_db = -15.0
+walk_sound = ExtResource("11_o3xn0")
+walk_volume_db = -30.0
+
+[node name="Dash" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Death" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Hurt" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Idle" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Jump" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Melee" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Ranged" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Special" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="Walk" type="AudioStreamPlayer" parent="Audio"]
+
+[node name="HBoxes" type="Node2D" parent="."]
 script = ExtResource("3_0bfht")
 
-[node name="PhysicsManager" type="Node" parent="."]
-script = ExtResource("6_pbvvu")
+[node name="LeftHitBox" type="Area2D" parent="HBoxes"]
 
-[node name="AudioManager" type="AudioStreamPlayer" parent="."]
-script = ExtResource("2_guca3")
+[node name="LeftHitBoxCollider" type="CollisionShape2D" parent="HBoxes/LeftHitBox"]
+shape = SubResource("CapsuleShape2D_quyaa")
+
+[node name="RightHitBox" type="Area2D" parent="HBoxes"]
+
+[node name="RightHitBoxCollider" type="CollisionShape2D" parent="HBoxes/RightHitBox"]
+shape = SubResource("CapsuleShape2D_wiaj1")
+
+[node name="UpHitBox" type="Area2D" parent="HBoxes"]
+
+[node name="UpHitBoxCollider" type="CollisionShape2D" parent="HBoxes/UpHitBox"]
+shape = SubResource("CapsuleShape2D_jnw0q")
+
+[node name="DownHitBox" type="Area2D" parent="HBoxes"]
+
+[node name="DownHitBoxCollider" type="CollisionShape2D" parent="HBoxes/DownHitBox"]
+shape = SubResource("CapsuleShape2D_uqcws")
+
+[node name="HurtBox" type="Area2D" parent="HBoxes"]
+
+[node name="HurtBoxCollider" type="CollisionShape2D" parent="HBoxes/HurtBox"]
+shape = SubResource("CapsuleShape2D_oonnn")
+
+[node name="Graphics" type="Node2D" parent="."]
+script = ExtResource("13_xofcc")
+character_frames = ExtResource("2_v572b")
+character_speed_scale = 2.0
+vfx_frames = ExtResource("4_mbvrk")
+vfx_speed_scale = 4.0
+shadow_alpha = 0.15
+jump_peak_height = 50.0
+jump_duration = 0.5
+
+[node name="Character" type="AnimatedSprite2D" parent="Graphics"]
+z_index = 1
+texture_filter = 1
+texture_repeat = 1
+position = Vector2(2.08165e-12, 2.08165e-12)
+scale = Vector2(2, 2)
+sprite_frames = ExtResource("14_t2rwe")
+animation = &"death"
+
+[node name="VFX" type="AnimatedSprite2D" parent="Graphics"]
+z_index = 2
+position = Vector2(2.08165e-12, 2.08165e-12)
+scale = Vector2(2, 2)
+sprite_frames = ExtResource("4_mbvrk")
+animation = &"land"
+offset = Vector2(2.08165e-12, 2.08165e-12)
+
+[node name="Shadow" type="Sprite2D" parent="Graphics"]
+position = Vector2(2.08165e-12, 28)
+scale = Vector2(2, 2)
+texture = ExtResource("16_v2hmw")
+
+[node name="Timers" type="Node2D" parent="."]
+script = ExtResource("17_p62wa")
+dash_cooldown = 4.0
+death_length = 0.5
+jump_cooldown = 4.0
+melee_cooldown = 0.2
+ranged_cooldown = 0.4
+
+[node name="DamageCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="DashCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="DeathTimer" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="JumpCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="MeleeCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="MeleeHitBoxActive" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="RangedCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="RangedHitBoxActive" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="SpecialCooldown" type="Timer" parent="Timers"]
+one_shot = true
+
+[node name="SpecialHitBoxActive" type="Timer" parent="Timers"]
+one_shot = true

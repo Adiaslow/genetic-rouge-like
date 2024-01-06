@@ -1,58 +1,128 @@
 class_name EnemyManager
 extends RigidBody2D
 
-@export_group("General")
-@export var enemy_scene: PackedScene
-@export var enemy_stats: StatsManager
+@onready var stats: StatsManager = $Stats
+@onready var brain = $Brain
+@onready var physics_collider: CollisionShape2D = $PhysicsCollider
+@onready var classical_physics: ClassicalPhysicsManager = $ClassicalPhysics
+@onready var heuristic_physics: HeuristicPhysicsManager = $HeuristicPhysics
+@onready var audio: AudioManager = $Audio
+@onready var h_boxes:  = $HBoxes
+@onready var graphics: GraphicsManager = $Graphics
+@onready var timers: TimerManager = $Timers
 
-@export_group("Visual")
-@export var animated_sprite_path: NodePath
-@export var vfx_sprite_path: NodePath
+var base_enemy
+var player
 
-@export_group("Audio")
-@export var walk_sound_path: AudioStream
-@export var attack_sound_path: AudioStream
-@export var hurt_sound_path: AudioStream
-@export var death_sound_path: AudioStream
-@export var sound_player_path: NodePath
+var enemy_id
+var fitness : float = 0.0
+var score : float = 0.0
+var lifespan : int
+var is_dead : bool
+var has_spawned : bool
+var decisions : Array
+var vision : Array
 
-var stats_manager: StatsManager
-var animation_manager: AnimationManager
-var vfx_manager: VFXManager
-var audio_manager: AudioManager
-
+var distance_to_player
+var move_angle : float = 0
+var move_vector : Vector3 = Vector3(0,0,0)
+	
 func _init():
-	# Initialize animation manager
-	var animated_sprite: AnimatedSprite2D = get_node_or_null(animated_sprite_path)
-	if animated_sprite:
-		animation_manager = AnimationManager.new(animated_sprite)
-		
-	# Initialize VFX manager
-	var vfx_sprite: AnimatedSprite2D = get_node_or_null(vfx_sprite_path)
-	if vfx_sprite:
-		vfx_manager = VFXManager.new(vfx_sprite)
-
-	# Initialize audio manager
-	var audio_player: AudioStreamPlayer = get_node_or_null(sound_player_path)
-	if audio_player:
-		audio_manager = AudioManager.new(walk_sound_path, attack_sound_path, hurt_sound_path, death_sound_path, audio_player)
-
+		add_to_group("enemy")
+		brain = Brain.new(4, 2)
+		score = 1
+		is_dead = false
+		has_spawned = false
+		decisions = []
+		vision = []
+	
 func _enter_tree():
-	# Code that runs when the node enters the scene tree
-	pass
+	player = get_tree().get_root().get_node("Player")
 
 func _ready():
-	pass
-	
+	base_enemy = preload("res://scenes/enemy.tscn")
 	
 func _process(_delta):
-	# Per-frame logic here
-	pass
+	pass	
 
 func _physics_process(_delta):
-	# Physics-related per-frame logic here
 	pass
 
 func _exit_tree():
-	# Cleanup code here
+	pass
+	
+func update_enemy():
+	if is_dead:
+		handle_death()
+	else:
+		look()
+		think()
+		premove()
+		update_score()
+		handle_attack()
+
+func clone():
+	var enemy_clone = base_enemy.instantiate()
+	enemy_clone.brain = brain.clone()
+	return enemy_clone
+
+func crossover(parent):
+	var child = base_enemy.instantiate()
+	if parent.fitness < fitness:
+		child.brain = brain.crossover(parent.brain)
+	else:
+		child.brain = parent.brain.crossover(brain)
+	child.brain.mutate()
+	return child
+	
+func look():
+	distance_to_player = position.distance_to(player.position)
+	var target_angle = atan2(player.position.y - position.y, \
+							 player.position.x - position.x)
+	vision = [linear_velocity.x, linear_velocity.y, distance_to_player, target_angle]
+	# print("Distance = ", current_distance_to_player)
+func think():
+	decisions = brain.feed_forward(vision)
+
+func premove():
+	if decisions.size() > 0:
+		move_angle = decisions[0] * 2 * PI
+		move_vector = Vector3(cos(move_angle),sin(move_angle),0)
+
+func move():
+	axis = move_vector
+	
+func update_score():
+	var proximity_score = 1-exp(-pow(distance_to_player, -1))
+	score += proximity_score
+	lifespan+=1
+
+func calculate_fitness():
+	var normalized_distance = pow(distance_to_player+1,-1)
+	fitness = score * normalized_distance
+		
+func die():
+	graphics.play_animation("death")
+	audio.play_death_sound()
+	is_dead = true
+	timers.death_timer.start(timers.death_length)
+	# get_parent().num_alive-=1
+
+func handle_death():
+	if timers.death_timer.time_left <= 0:
+		get_parent().remove_child(self)
+		pass
+			
+func handle_attack():
+	"""if decisions[1] && timers.melee_cooldown_timer.time_left <=0:
+		animations.play("attack")
+		hit_box_shape.disabled = false
+		melee_cooldown.start(0.5)
+		melee_animation_timer.start(0.2)
+		hit_box_timer.start(0.1)
+	elif hit_box_timer.time_left <= 0:
+		hit_box_shape.disabled = true
+	else:
+		pass"""
+
 	pass

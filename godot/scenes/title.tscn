@@ -1,0 +1,41 @@
+[gd_scene load_steps=7 format=3 uid="uid://bjbkvmkyxoqg"]
+
+[ext_resource type="Script" path="res://scenes/title_manager.gd" id="1_wb5bb"]
+[ext_resource type="Script" path="res://scenes/title_button.gd" id="2_yyv7k"]
+[ext_resource type="AudioStream" uid="uid://blrolu2vgw5cl" path="res://audio/music/Party Zute ⧸ Learning To Love Edit 2.wav" id="4_cfeu6"]
+[ext_resource type="Texture2D" uid="uid://d4jowmyawntll" path="res://graphics/sprites/start_button_text.png" id="4_ve3te"]
+[ext_resource type="AudioStream" uid="uid://mgqemelt0asm" path="res://audio/ambience/Under Water Sound FX.wav" id="5_qmfca"]
+[ext_resource type="Texture2D" uid="uid://b17k6sravg18t" path="res://graphics/sprites/title_screen_background.png" id="6_5aq1t"]
+
+[node name="TitleScene" type="Node2D"]
+script = ExtResource("1_wb5bb")
+
+[node name="Background" type="Sprite2D" parent="."]
+scale = Vector2(4.3, 4.3)
+texture = ExtResource("6_5aq1t")
+centered = false
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+offset_left = 768.0
+offset_top = 1199.0
+offset_right = 896.0
+offset_bottom = 1231.0
+scale = Vector2(4.3, 4.3)
+
+[node name="StartButton" type="TextureButton" parent="CenterContainer"]
+layout_mode = 2
+texture_normal = ExtResource("4_ve3te")
+texture_pressed = ExtResource("4_ve3te")
+texture_hover = ExtResource("4_ve3te")
+texture_disabled = ExtResource("4_ve3te")
+texture_focused = ExtResource("4_ve3te")
+script = ExtResource("2_yyv7k")
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_cfeu6")
+volume_db = -10.0
+bus = &"Music"
+
+[node name="UnderWater" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_qmfca")
+volume_db = -15.0

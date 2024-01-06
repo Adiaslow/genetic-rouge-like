@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="genetic-rouge-like"
-run/main_scene="res://scenes/world.tscn"
+run/main_scene="res://scenes/game_manager_bootstrap.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://graphics/icons/icon.svg"
+
+[autoload]
+
+GameStateManager="*res://scripts/Managers/game_state_manager.gd"
 
 [display]
 

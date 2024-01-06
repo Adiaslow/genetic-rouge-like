@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://chcslgbkdbcr8"]
+[gd_scene load_steps=11 format=3 uid="uid://chcslgbkdbcr8"]
 
 [ext_resource type="Script" path="res://scripts/Managers/world_manager.gd" id="1_mllvs"]
 [ext_resource type="Texture2D" uid="uid://411tcue0ro7h" path="res://graphics/sprites/tiles/underwater.png" id="2_ddes6"]
@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://mgqemelt0asm" path="res://audio/ambience/Under Water Sound FX.wav" id="4_bbvgw"]
 [ext_resource type="AudioStream" uid="uid://c7jfkx4dmsc5q" path="res://audio/fx/store_bell.wav" id="5_xlu16"]
 [ext_resource type="PackedScene" uid="uid://dxsdarpq7lxwb" path="res://scenes/UI.tscn" id="6_ofv4r"]
+[ext_resource type="Script" path="res://scenes/camera_manager.gd" id="8_2cruv"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_bgtt2"]
 texture = ExtResource("2_ddes6")
@@ -174,25 +175,32 @@ layer_3/name = "Deco"
 layer_3/z_index = 1
 layer_3/tile_data = PackedInt32Array(458772, 2, 9, 851973, 2, 9, 917510, 2, 9, 1179670, 2, 9, 393223, 2, 9, 655372, 2, 9, 262172, 2, 9, 917530, 2, 9, 1114125, 2, 9, 1376259, 2, 9)
 
+[node name="DoorSound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_xlu16")
+volume_db = -15.0
+
 [node name="Music" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_5tfn1")
-volume_db = -5.0
+volume_db = -10.0
 bus = &"Music"
 
 [node name="UnderWater" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("4_bbvgw")
 volume_db = -15.0
 
-[node name="DoorSound" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("5_xlu16")
-volume_db = -15.0
-
-[node name="UI" parent="." instance=ExtResource("6_ofv4r")]
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 50.0
-offset_bottom = 50.0
-
 [node name="Player" parent="." instance=ExtResource("3_hmcpj")]
 z_index = 2
 position = Vector2(858, 500)
+
+[node name="UI" parent="." instance=ExtResource("6_ofv4r")]
+offset_left = 356.0
+offset_top = 127.0
+offset_right = 356.0
+offset_bottom = 127.0
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(858, 500)
+zoom = Vector2(2, 2)
+position_smoothing_enabled = true
+script = ExtResource("8_2cruv")
+follow_damping = 0.7

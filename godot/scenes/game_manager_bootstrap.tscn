@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwvs7ehd13wb3"]
+
+[ext_resource type="Script" path="res://game_manager_bootstrap.gd" id="1_uaohi"]
+
+[node name="GameManagerBootstrap" type="Node2D"]
+script = ExtResource("1_uaohi")

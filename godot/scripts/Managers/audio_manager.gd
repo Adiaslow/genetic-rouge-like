@@ -1,7 +1,7 @@
 class_name AudioManager
 extends Node2D
 
-@onready var input_manager: InputManager = get_node("../Input")
+@onready var input_manager = get_node("../Input")
 
 @onready var dash: AudioStreamPlayer = $Dash
 @onready var death: AudioStreamPlayer = $Death
